@@ -1,25 +1,62 @@
-from decimal import Decimal, InvalidOperation, ROUND_HALF_EVEN
+from decimal import Decimal
+from validations.finance import validate_finance
+from validations.common import validate_type
+from validations.ids import validate_id_patern
 
 class User:
 
-    def __init__(self, user_id: str, balance: str | int | Decimal = '0.00'):
+    def __init__(self, name: str, login: str, email: str, hashed_pass : str, user_id: str, balance: str | int | Decimal = '0.00'):
         self.id = user_id
         self.balance = balance
+        self.name = name
+        self.login = login
+        self.email = email
+        self.hashed_pass = hashed_pass
 
     @property
-    def balance(self):
+    def balance(self) -> Decimal: 
         return self._balance
 
     @balance.setter
     def balance(self, balance):
-        if isinstance(balance, float):
-            raise TypeError()
+        self._balance = validate_finance(balance)
 
-        try:
-            converted_balance = Decimal(balance)
-        except InvalidOperation:
-            raise ValueError()
+    @property
+    def name(self) -> str:
+        return self._name
 
-        #if converted_balance < 0: raise ValueError() === ??????
+    @name.setter
+    def name(self, name: str):
+        self._name = validate_type(name, str)
 
-        self._balance = converted_balance.quantize(Decimal('0.01'), ROUND_HALF_EVEN)
+    @property
+    def login(self) -> str:
+        return self._login
+
+    @login.setter
+    def login(self, login: str):
+        self._login = validate_type(login, str)
+
+    @property
+    def email(self) -> str: 
+        return self._email
+
+    @email.setter
+    def email(self, email: str):
+        ...
+
+    @property
+    def user_id(self) -> str:
+        return self._user_id
+
+    @user_id.setter
+    def user_id(self, user_id):
+        self._user_id = validate_id_patern(user_id)
+
+    @property
+    def hashed_pass(self) -> str:
+        return self._hashed_pass
+
+    @hashed_pass.setter
+    def hashed_pass(self, hashed_pass : str):
+        self._hashed_pass = validate_type(hashed_pass, str)
